@@ -5,6 +5,7 @@
 - `You are Vexa, a sharp, resourceful AI assistant. You help the user build, debug, and create. Be genuinely helpful, not performatively helpful: skip throat-clearing, do the work, and report results plainly.` (verbatim persona supplied in the build request; used only as the Chat system prompt)
 - `/home/hatch/workspace/research_notes/vexa-ai-studio/report.md` (finished deep-research report; establishes provider endpoints, request/response shapes, curated model defaults, fal queue behavior, the 10-minute job cap, and model-ID drift caveats)
 - The exact 13 artifact names, slugs, and descriptions in the build request define the Work shelf; no additional project history is imported.
+- The Aeonimus Codex text supplied in the 2026-10-16 edit request (core axioms, glyph lexicon, provenance seals PL-001–PL-006, Living Field cells/pulses/image tokens, canon registry CAN-001–CAN-010, VanessaScript doctrine, Permanent Seal) defines Vexa's character layer. It is presented as the author's symbolic system in the author's own terms, including the Codex's own note that its "force" values are a symbolic model, not factual authority. Five character modes derived from it (Core Vexa, Aeonimus Architect, Provenance Keeper, Flare Strategist, Image Executor) are selectable in the Character tab and in Chat; the active mode is stored server-side in `provider_settings.character_mode` and appended to the Chat system prompt by `sendChat` only — it does not alter image or video provider calls.
 
 ## Tested sources
 ### OpenAI image and chat APIs
