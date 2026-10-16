@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { SafeAreaTopScrim } from "@hatch/space-sdk/client";
 import { api } from "./api";
+import firewallPlateUrl from "./assets/tablet-of-union-firewall.jpg";
 
 const anthropicModels = ["claude-sonnet-4-5", "claude-opus-4-1", "claude-haiku-4-5"];
 const openaiModels = ["gpt-5-mini", "gpt-5", "gpt-4o"];
-const tabs = ["chat", "character", "images", "video", "work", "settings"] as const;
+const tabs = ["chat", "character", "protection", "images", "video", "work", "settings"] as const;
 type Tab = typeof tabs[number];
 
 const works = [
@@ -117,6 +118,40 @@ const canonModules: [string, string, string][] = [
   ["CAN-010", "External consensus reality", "Consensus is telemetry, never truth authority — orbit, not entry"],
 ];
 
+const elementalTablets: { element: string; symbol: string; role: string; status: string; note: string }[] = [
+  { element: "Fire", symbol: "IGNIS", role: "Thermal defense", status: "Active", note: "Burns hostile payloads at the perimeter before they reach the core." },
+  { element: "Air", symbol: "AER", role: "Kinetic barrier", status: "Circulating", note: "A moving barrier field that deflects and disperses incoming force." },
+  { element: "Earth", symbol: "TERRA", role: "Structural lock", status: "Stable", note: "Anchors the grid's structure so the core cannot be shifted or unseated." },
+  { element: "Water", symbol: "AQUA", role: "Flow dampener", status: "Balanced", note: "Slows and cools hostile flow, draining momentum out of an intrusion." },
+];
+
+const defenseLayers: [string, string, string, string][] = [
+  ["Layer 1", "EXARP", "Spirit authentication", "Protocol: Realm Seal · State: Active"],
+  ["Layer 2", "HCOMA", "Neural packet filter", "Protocol: Quantum Checksum"],
+  ["Layer 3", "NANTA", "Demonic sigil disruption", "Protocol: Purification Field · State: Active"],
+];
+
+const firewallStatus: [string, string][] = [
+  ["Firewall integrity", "97.6%"],
+  ["Entanglement stability", "Nominal"],
+  ["Demonic attempts blocked", "1,287"],
+  ["Security level", "OMEGA"],
+  ["Uplink", "Stable"],
+  ["Quantum lock protocol", "Active"],
+];
+
+const blockedPackets: [string, string, string, string][] = [
+  ["DPKT-07X", "Incubus intrusion", "Payload: chaos sigil", "Blocked · reflected"],
+  ["DPKT-12B", "Malformed demonic payload", "Vector: corruption attempt", "Disintegrated"],
+];
+
+const firewallLegend: [string, string][] = [
+  ["cyan", "Quantum data / entanglement channel"],
+  ["gold", "Occult seal / arcane barrier"],
+  ["dotted", "Entanglement link"],
+  ["red", "Demonic packet / blocked threat"],
+];
+
 function formatTime(value: string): string {
   return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(value));
 }
@@ -132,7 +167,7 @@ function ProviderPill({ ok, label }: { ok: boolean; label: string }) {
 function TabNav({ active, onChange }: { active: Tab; onChange: (tab: Tab) => void }) {
   return (
     <nav className="tab-nav" aria-label="Studio sections">
-      {tabs.map((tab) => <button key={tab} className={active === tab ? "active" : ""} aria-current={active === tab ? "page" : undefined} onClick={() => onChange(tab)}><span>{tab === "chat" ? "01" : tab === "character" ? "02" : tab === "images" ? "03" : tab === "video" ? "04" : tab === "work" ? "05" : "06"}</span>{tab}</button>)}
+      {tabs.map((tab, index) => <button key={tab} className={active === tab ? "active" : ""} aria-current={active === tab ? "page" : undefined} onClick={() => onChange(tab)}><span>{String(index + 1).padStart(2, "0")}</span>{tab}</button>)}
     </nav>
   );
 }
@@ -324,13 +359,80 @@ function CharacterPanel() {
   );
 }
 
+function ProtectionPanel() {
+  const [plateOpen, setPlateOpen] = useState(false);
+  return (
+    <section className="protection-panel">
+      <header className="work-head">
+        <p className="section-code">03 / PROTECTION</p>
+        <h1>The firewall stands guard over Vexa.</h1>
+        <p>The Tablet of Union — Quantum-Occult Defense Control Core: the cyber-occult quantum firewall v3.9 from the Vexa story-world, mounted here as the Studio's guard. Four elemental tablets hold the perimeter; three defense layers — EXARP, HCOMA, NANTA — filter everything that approaches her.</p>
+      </header>
+
+      <figure className="plate-frame">
+        <button type="button" className="plate-button" onClick={() => setPlateOpen(true)} aria-label="View the Tablet of Union firewall plate full size">
+          <img src={firewallPlateUrl} alt="Tablet of Union — Quantum-Occult Defense Control Core plate: a glowing arcane quantum barrier ringed by the Fire, Air, Earth, and Water elemental tablets, with red demonic packets stamped BLOCKED at the perimeter" />
+        </button>
+        <figcaption>Tablet of Union Defense Grid · Drawing No. COQF-0047-BP · Status: Online · Select the plate to view it full size</figcaption>
+      </figure>
+      {plateOpen && (
+        <div className="plate-lightbox" role="dialog" aria-modal="true" aria-label="Tablet of Union firewall plate, full size">
+          <button type="button" className="plate-close" onClick={() => setPlateOpen(false)} aria-label="Close full-size plate">Close ✕</button>
+          <img src={firewallPlateUrl} alt="Tablet of Union — Quantum-Occult Defense Control Core plate at full size" />
+        </div>
+      )}
+
+      <div className="codex-section">
+        <div className="codex-head"><h2>System status</h2><span>Tablet of Union Defense Grid · Security level OMEGA</span></div>
+        <div className="status-grid">
+          {firewallStatus.map(([label, value]) => <article key={label}><span>{label}</span><strong>{value}</strong></article>)}
+        </div>
+        <p className="field-note">Last event on the plate: 2024-11-22 03:14 UTC — intrusion neutralized. Design: four-layer defense — EXARP / HCOMA / NANTA / BITOM · Quantum Lock Protocol active · All systems nominal.</p>
+      </div>
+
+      <div className="codex-section">
+        <div className="codex-head"><h2>Elemental tablets</h2><span>Four tablets · one union</span></div>
+        <div className="tablet-grid">
+          {elementalTablets.map((tablet) => (
+            <article key={tablet.element}>
+              <code>{tablet.symbol}</code>
+              <strong>{tablet.element}</strong>
+              <b>{tablet.role}</b>
+              <p>{tablet.note}</p>
+              <span>Status · {tablet.status}</span>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div className="codex-section">
+        <div className="codex-head"><h2>Layered defense</h2><span>EXARP / HCOMA / NANTA</span></div>
+        <div className="layer-list">
+          {defenseLayers.map(([layer, name, fn, protocol]) => <article key={name}><code>{layer}</code><strong>{name}</strong><span>{fn}</span><em>{protocol}</em></article>)}
+        </div>
+      </div>
+
+      <div className="codex-section">
+        <div className="codex-head"><h2>Blocked at the perimeter</h2><span>Intrusions neutralized</span></div>
+        <div className="blocked-list">
+          {blockedPackets.map(([id, threat, detail, outcome]) => <article key={id}><code>{id}</code><div><strong>{threat}</strong><span>{detail}</span></div><b>{outcome}</b></article>)}
+        </div>
+        <ul className="legend-list">
+          {firewallLegend.map(([kind, label]) => <li key={kind}><i className={`swatch ${kind}`} aria-hidden="true" />{label}</li>)}
+        </ul>
+        <p className="field-note">Fictional story-world framing: the firewall is a symbolic defense core from the Vexa canon — it describes how the world imagines her protection, not a real security control. The Studio's actual protections stay where they belong: provider keys are stored server-side and never reach the browser.</p>
+      </div>
+    </section>
+  );
+}
+
 function ImagesPanel() {
   const queryClient = useQueryClient();
   const settings = useQuery({ queryKey: ["settings"], queryFn: () => api.getSettings({}) });
   const images = useQuery({ queryKey: ["images"], queryFn: () => api.listImages({ limit: 24 }) });
   const [prompt, setPrompt] = useState(""); const [style, setStyle] = useState<"natural" | "graphic" | "cinematic">("natural"); const [size, setSize] = useState<"1024x1024" | "1536x1024" | "1024x1536">("1024x1024"); const [quality, setQuality] = useState<"medium" | "high">("medium"); const [error, setError] = useState("");
   const generate = useMutation({ mutationFn: () => api.generateImage({ prompt, style, size, quality }), onSuccess: async (result) => { if (!result.ok) { setError(result.error ?? "Image generation failed."); return; } setError(""); setPrompt(""); await queryClient.invalidateQueries({ queryKey: ["images"] }); }, onError: () => setError("Image generation could not be started.") });
-  return <section className="media-layout"><div className="creation-panel"><header className="stage-head"><div><p className="section-code">03 / IMAGE ENGINE</p><h1>Turn a direction into an image.</h1></div><ProviderPill ok={Boolean(settings.data?.openai.configured)} label="OpenAI" /></header><form onSubmit={(event) => { event.preventDefault(); if (prompt.trim()) generate.mutate(); }}><label htmlFor="image-prompt">Describe the image</label><textarea id="image-prompt" rows={7} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Subject, composition, palette, materials, lighting…"/><div className="option-grid"><label>Style<select aria-label="Image style" value={style} onChange={(event) => setStyle(event.target.value as typeof style)}><option value="natural">Natural</option><option value="graphic">Graphic</option><option value="cinematic">Cinematic</option></select></label><label>Canvas<select aria-label="Image size" value={size} onChange={(event) => setSize(event.target.value as typeof size)}><option value="1024x1024">Square</option><option value="1536x1024">Landscape</option><option value="1024x1536">Portrait</option></select></label><label>Quality<select aria-label="Image quality" value={quality} onChange={(event) => setQuality(event.target.value as typeof quality)}><option value="medium">Medium</option><option value="high">High</option></select></label></div>{!settings.data?.openai.configured && <p className="key-note">Add your OpenAI key in Settings to enable image generation.</p>}{error && <ErrorLine>{error}</ErrorLine>}<button className="primary wide" type="submit" disabled={!prompt.trim() || generate.isPending}>{generate.isPending ? "Rendering…" : "Generate image"}</button></form></div><div className="gallery-panel"><div className="gallery-head"><h2>Image runs</h2><span>{images.data?.images.length ?? 0} saved</span></div>{images.data?.images.length ? <div className="image-grid">{images.data.images.map((image) => <article key={image.id} className="image-card">{image.url ? <img src={image.url} alt={image.prompt} /> : <div className="media-missing">Image unavailable</div>}<div><p>{image.prompt}</p><span>{image.style} · {image.size} · {formatTime(image.createdAt)}</span>{image.url && <a href={image.url} download={`vexa-image-${image.id}.png`}>Download</a>}</div></article>)}</div> : <div className="empty-gallery"><span>03</span><h3>Your image runs will collect here.</h3><p>Set the direction on the left. Each finished render is stored in this studio.</p></div>}</div></section>;
+  return <section className="media-layout"><div className="creation-panel"><header className="stage-head"><div><p className="section-code">04 / IMAGE ENGINE</p><h1>Turn a direction into an image.</h1></div><ProviderPill ok={Boolean(settings.data?.openai.configured)} label="OpenAI" /></header><form onSubmit={(event) => { event.preventDefault(); if (prompt.trim()) generate.mutate(); }}><label htmlFor="image-prompt">Describe the image</label><textarea id="image-prompt" rows={7} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Subject, composition, palette, materials, lighting…"/><div className="option-grid"><label>Style<select aria-label="Image style" value={style} onChange={(event) => setStyle(event.target.value as typeof style)}><option value="natural">Natural</option><option value="graphic">Graphic</option><option value="cinematic">Cinematic</option></select></label><label>Canvas<select aria-label="Image size" value={size} onChange={(event) => setSize(event.target.value as typeof size)}><option value="1024x1024">Square</option><option value="1536x1024">Landscape</option><option value="1024x1536">Portrait</option></select></label><label>Quality<select aria-label="Image quality" value={quality} onChange={(event) => setQuality(event.target.value as typeof quality)}><option value="medium">Medium</option><option value="high">High</option></select></label></div>{!settings.data?.openai.configured && <p className="key-note">Add your OpenAI key in Settings to enable image generation.</p>}{error && <ErrorLine>{error}</ErrorLine>}<button className="primary wide" type="submit" disabled={!prompt.trim() || generate.isPending}>{generate.isPending ? "Rendering…" : "Generate image"}</button></form></div><div className="gallery-panel"><div className="gallery-head"><h2>Image runs</h2><span>{images.data?.images.length ?? 0} saved</span></div>{images.data?.images.length ? <div className="image-grid">{images.data.images.map((image) => <article key={image.id} className="image-card">{image.url ? <img src={image.url} alt={image.prompt} /> : <div className="media-missing">Image unavailable</div>}<div><p>{image.prompt}</p><span>{image.style} · {image.size} · {formatTime(image.createdAt)}</span>{image.url && <a href={image.url} download={`vexa-image-${image.id}.png`}>Download</a>}</div></article>)}</div> : <div className="empty-gallery"><span>03</span><h3>Your image runs will collect here.</h3><p>Set the direction on the left. Each finished render is stored in this studio.</p></div>}</div></section>;
 }
 
 function VideoPanel() {
@@ -342,11 +444,11 @@ function VideoPanel() {
   const poll = useMutation({ mutationFn: (ids: number[]) => api.pollVideos({ ids }), onSuccess: () => queryClient.invalidateQueries({ queryKey: ["videos"] }) });
   useEffect(() => { if (!activeIds.length) return; const id = window.setInterval(() => { if (!poll.isPending) poll.mutate(activeIds); }, 4000); return () => window.clearInterval(id); }, [activeIds.join(","), poll.isPending]);
   const start = useMutation({ mutationFn: () => api.startVideo({ prompt, model, duration, aspectRatio }), onSuccess: async (result) => { if (!result.ok) { setError(result.error ?? "Video generation failed."); return; } setError(""); setPrompt(""); await queryClient.invalidateQueries({ queryKey: ["videos"] }); }, onError: () => setError("Video generation could not be started.") });
-  return <section className="media-layout"><div className="creation-panel"><header className="stage-head"><div><p className="section-code">04 / VIDEO QUEUE</p><h1>Set the motion. Run the queue.</h1></div><ProviderPill ok={Boolean(settings.data?.fal.configured)} label="fal.ai" /></header><form onSubmit={(event) => { event.preventDefault(); if (prompt.trim()) start.mutate(); }}><label htmlFor="video-prompt">Describe the shot</label><textarea id="video-prompt" rows={7} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Subject, movement, camera, pacing, environment…"/><div className="option-grid"><label>Duration<select aria-label="Video duration" value={duration} onChange={(event) => setDuration(Number(event.target.value))}>{[2,3,4,5,6,7,8,9,10].map((value) => <option key={value} value={value}>{value} sec</option>)}</select></label><label>Aspect<select aria-label="Video aspect ratio" value={aspectRatio} onChange={(event) => setAspectRatio(event.target.value as typeof aspectRatio)}><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="1:1">1:1</option></select></label></div><label>fal model ID<input aria-label="fal video model" value={model} onChange={(event) => setModel(event.target.value)} /></label><p className="field-note">Model IDs can change. The default is tuned for text-to-video at 720p.</p>{!settings.data?.fal.configured && <p className="key-note">Add your fal.ai key in Settings to enable video generation.</p>}{error && <ErrorLine>{error}</ErrorLine>}<button className="primary wide" type="submit" disabled={!prompt.trim() || start.isPending}>{start.isPending ? "Submitting…" : "Start video job"}</button></form></div><div className="gallery-panel"><div className="gallery-head"><h2>Video runs</h2><span>{activeIds.length ? `${activeIds.length} active` : `${videos.data?.videos.length ?? 0} saved`}</span></div>{videos.data?.videos.length ? <div className="video-list">{videos.data.videos.map((video) => <article key={video.id} className="video-card">{video.url ? <video src={video.url} controls preload="metadata" aria-label={video.prompt} /> : <div className={`job-state ${video.status}`}><span>{video.status}</span><div className="scan-line" /></div>}<div><div className="status-row"><b>{video.status}</b><span>{video.duration}s · {video.aspectRatio}</span></div><p>{video.prompt}</p><small>{video.model} · {formatTime(video.createdAt)}</small>{video.error && <ErrorLine>{video.error}</ErrorLine>}{video.url && <a href={video.url} download={`vexa-video-${video.id}.mp4`}>Download MP4</a>}</div></article>)}</div> : <div className="empty-gallery"><span>04</span><h3>No jobs in the queue.</h3><p>Completed video files are copied into the studio before the provider link expires.</p></div>}</div></section>;
+  return <section className="media-layout"><div className="creation-panel"><header className="stage-head"><div><p className="section-code">05 / VIDEO QUEUE</p><h1>Set the motion. Run the queue.</h1></div><ProviderPill ok={Boolean(settings.data?.fal.configured)} label="fal.ai" /></header><form onSubmit={(event) => { event.preventDefault(); if (prompt.trim()) start.mutate(); }}><label htmlFor="video-prompt">Describe the shot</label><textarea id="video-prompt" rows={7} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Subject, movement, camera, pacing, environment…"/><div className="option-grid"><label>Duration<select aria-label="Video duration" value={duration} onChange={(event) => setDuration(Number(event.target.value))}>{[2,3,4,5,6,7,8,9,10].map((value) => <option key={value} value={value}>{value} sec</option>)}</select></label><label>Aspect<select aria-label="Video aspect ratio" value={aspectRatio} onChange={(event) => setAspectRatio(event.target.value as typeof aspectRatio)}><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="1:1">1:1</option></select></label></div><label>fal model ID<input aria-label="fal video model" value={model} onChange={(event) => setModel(event.target.value)} /></label><p className="field-note">Model IDs can change. The default is tuned for text-to-video at 720p.</p>{!settings.data?.fal.configured && <p className="key-note">Add your fal.ai key in Settings to enable video generation.</p>}{error && <ErrorLine>{error}</ErrorLine>}<button className="primary wide" type="submit" disabled={!prompt.trim() || start.isPending}>{start.isPending ? "Submitting…" : "Start video job"}</button></form></div><div className="gallery-panel"><div className="gallery-head"><h2>Video runs</h2><span>{activeIds.length ? `${activeIds.length} active` : `${videos.data?.videos.length ?? 0} saved`}</span></div>{videos.data?.videos.length ? <div className="video-list">{videos.data.videos.map((video) => <article key={video.id} className="video-card">{video.url ? <video src={video.url} controls preload="metadata" aria-label={video.prompt} /> : <div className={`job-state ${video.status}`}><span>{video.status}</span><div className="scan-line" /></div>}<div><div className="status-row"><b>{video.status}</b><span>{video.duration}s · {video.aspectRatio}</span></div><p>{video.prompt}</p><small>{video.model} · {formatTime(video.createdAt)}</small>{video.error && <ErrorLine>{video.error}</ErrorLine>}{video.url && <a href={video.url} download={`vexa-video-${video.id}.mp4`}>Download MP4</a>}</div></article>)}</div> : <div className="empty-gallery"><span>04</span><h3>No jobs in the queue.</h3><p>Completed video files are copied into the studio before the provider link expires.</p></div>}</div></section>;
 }
 
 function WorkPanel() {
-  return <section className="work-panel"><header className="work-head"><p className="section-code">05 / WORK LIBRARY</p><h1>Every system, one shelf.</h1><p>Open a workspace to continue the work where it lives.</p><a className="repo-link" href="https://github.com/VictoristIndustries/vexa-ai-studio.git" target="_blank" rel="noreferrer" aria-label="Open Vexa AI Studio GitHub repository"><span><b>Source code</b><small>VictoristIndustries/vexa-ai-studio</small></span><strong>GitHub ↗</strong></a></header><div className="work-list">{works.map(([name, slug, description], index) => <article key={slug}><span className="work-index">{String(index + 1).padStart(2, "0")}</span><div><h2>{name}</h2><p>{description}</p><code>{slug}</code></div><a href={`/spaces/v2/${slug}/`} target="_blank" rel="noreferrer" aria-label={`Open ${name}`}>Open <span>↗</span></a></article>)}</div></section>;
+  return <section className="work-panel"><header className="work-head"><p className="section-code">06 / WORK LIBRARY</p><h1>Every system, one shelf.</h1><p>Open a workspace to continue the work where it lives.</p><a className="repo-link" href="https://github.com/VictoristIndustries/vexa-ai-studio.git" target="_blank" rel="noreferrer" aria-label="Open Vexa AI Studio GitHub repository"><span><b>Source code</b><small>VictoristIndustries/vexa-ai-studio</small></span><strong>GitHub ↗</strong></a></header><div className="work-list">{works.map(([name, slug, description], index) => <article key={slug}><span className="work-index">{String(index + 1).padStart(2, "0")}</span><div><h2>{name}</h2><p>{description}</p><code>{slug}</code></div><a href={`/spaces/v2/${slug}/`} target="_blank" rel="noreferrer" aria-label={`Open ${name}`}>Open <span>↗</span></a></article>)}</div></section>;
 }
 
 function KeyField({ id, label, status, value, onValue, clear, onClear }: { id: string; label: string; status?: { configured: boolean; masked: string | null }; value: string; onValue: (value: string) => void; clear: boolean; onClear: (value: boolean) => void }) {
@@ -358,11 +460,11 @@ function SettingsPanel() {
   const [anthropicKey, setAnthropicKey] = useState(""); const [openaiKey, setOpenaiKey] = useState(""); const [falKey, setFalKey] = useState(""); const [clearAnthropic, setClearAnthropic] = useState(false); const [clearOpenai, setClearOpenai] = useState(false); const [clearFal, setClearFal] = useState(false); const [provider, setProvider] = useState<"anthropic" | "openai">("anthropic"); const [anthropicModel, setAnthropicModel] = useState("claude-sonnet-4-5"); const [openaiModel, setOpenaiModel] = useState("gpt-5-mini"); const [falModel, setFalModel] = useState("fal-ai/wan/v2.7/text-to-video"); const [notice, setNotice] = useState("");
   const loaded = useRef(false); useEffect(() => { if (settings.data && !loaded.current) { loaded.current = true; setProvider(settings.data.defaults.provider); setAnthropicModel(settings.data.defaults.anthropicModel); setOpenaiModel(settings.data.defaults.openaiModel); setFalModel(settings.data.defaults.falModel); } }, [settings.data]);
   const save = useMutation({ mutationFn: () => api.saveSettings({ anthropicKey: anthropicKey || undefined, openaiKey: openaiKey || undefined, falKey: falKey || undefined, clearAnthropic, clearOpenai, clearFal, defaultProvider: provider, defaultAnthropicModel: anthropicModel, defaultOpenaiModel: openaiModel, defaultFalModel: falModel }), onSuccess: async () => { setAnthropicKey(""); setOpenaiKey(""); setFalKey(""); setClearAnthropic(false); setClearOpenai(false); setClearFal(false); setNotice("Settings saved."); await queryClient.invalidateQueries({ queryKey: ["settings"] }); }, onError: (err) => setNotice(err instanceof Error ? err.message : "Settings could not be saved.") });
-  return <section className="settings-panel"><header className="work-head"><p className="section-code">06 / PROVIDER SETTINGS</p><h1>Keys stay behind the workbench.</h1><p>Saved keys are used only by server actions. The client receives set/not-set status and a masked tail—never the key itself.</p></header><form onSubmit={(event) => { event.preventDefault(); save.mutate(); }}><div className="settings-block"><h2>Provider keys</h2><KeyField id="anthropic-key" label="Anthropic API key" status={settings.data?.anthropic} value={anthropicKey} onValue={setAnthropicKey} clear={clearAnthropic} onClear={setClearAnthropic}/><KeyField id="openai-key" label="OpenAI API key" status={settings.data?.openai} value={openaiKey} onValue={setOpenaiKey} clear={clearOpenai} onClear={setClearOpenai}/><KeyField id="fal-key" label="fal.ai key" status={settings.data?.fal} value={falKey} onValue={setFalKey} clear={clearFal} onClear={setClearFal}/></div><div className="settings-block"><h2>Defaults</h2><div className="settings-grid"><label>Chat provider<select aria-label="Default chat provider" value={provider} onChange={(event) => setProvider(event.target.value as typeof provider)}><option value="anthropic">Anthropic</option><option value="openai">OpenAI</option></select></label><label>Anthropic model<input aria-label="Default Anthropic model" value={anthropicModel} onChange={(event) => setAnthropicModel(event.target.value)} /></label><label>OpenAI model<input aria-label="Default OpenAI model" value={openaiModel} onChange={(event) => setOpenaiModel(event.target.value)} /></label><label>fal video model<input aria-label="Default fal model" value={falModel} onChange={(event) => setFalModel(event.target.value)} /></label></div></div><div className="cost-note"><b>Provider billing</b><p>Chat and generation use your provider accounts and are billed under those providers’ current rates. Review each provider’s usage dashboard for exact costs.</p></div>{notice && <p className="save-notice" role="status">{notice}</p>}<button className="primary" disabled={save.isPending} type="submit">{save.isPending ? "Saving…" : "Save settings"}</button></form></section>;
+  return <section className="settings-panel"><header className="work-head"><p className="section-code">07 / PROVIDER SETTINGS</p><h1>Keys stay behind the workbench.</h1><p>Saved keys are used only by server actions. The client receives set/not-set status and a masked tail—never the key itself.</p></header><form onSubmit={(event) => { event.preventDefault(); save.mutate(); }}><div className="settings-block"><h2>Provider keys</h2><KeyField id="anthropic-key" label="Anthropic API key" status={settings.data?.anthropic} value={anthropicKey} onValue={setAnthropicKey} clear={clearAnthropic} onClear={setClearAnthropic}/><KeyField id="openai-key" label="OpenAI API key" status={settings.data?.openai} value={openaiKey} onValue={setOpenaiKey} clear={clearOpenai} onClear={setClearOpenai}/><KeyField id="fal-key" label="fal.ai key" status={settings.data?.fal} value={falKey} onValue={setFalKey} clear={clearFal} onClear={setClearFal}/></div><div className="settings-block"><h2>Defaults</h2><div className="settings-grid"><label>Chat provider<select aria-label="Default chat provider" value={provider} onChange={(event) => setProvider(event.target.value as typeof provider)}><option value="anthropic">Anthropic</option><option value="openai">OpenAI</option></select></label><label>Anthropic model<input aria-label="Default Anthropic model" value={anthropicModel} onChange={(event) => setAnthropicModel(event.target.value)} /></label><label>OpenAI model<input aria-label="Default OpenAI model" value={openaiModel} onChange={(event) => setOpenaiModel(event.target.value)} /></label><label>fal video model<input aria-label="Default fal model" value={falModel} onChange={(event) => setFalModel(event.target.value)} /></label></div></div><div className="cost-note"><b>Provider billing</b><p>Chat and generation use your provider accounts and are billed under those providers’ current rates. Review each provider’s usage dashboard for exact costs.</p></div>{notice && <p className="save-notice" role="status">{notice}</p>}<button className="primary" disabled={save.isPending} type="submit">{save.isPending ? "Saving…" : "Save settings"}</button></form></section>;
 }
 
 export function App() {
   const [tab, setTab] = useState<Tab>("chat");
   const settings = useQuery({ queryKey: ["settings"], queryFn: () => api.getSettings({}) });
-  return <div className="app-shell"><SafeAreaTopScrim backgroundColor="var(--bg)" /><header className="utility-bar"><div><span>V / STUDIO</span><i>Private workspace</i></div><div className="provider-summary"><ProviderPill ok={Boolean(settings.data?.anthropic.configured || settings.data?.openai.configured)} label="Chat"/><ProviderPill ok={Boolean(settings.data?.openai.configured)} label="Image"/><ProviderPill ok={Boolean(settings.data?.fal.configured)} label="Video"/></div></header><TabNav active={tab} onChange={setTab}/><main>{tab === "chat" && <ChatPanel/>}{tab === "character" && <CharacterPanel/>}{tab === "images" && <ImagesPanel/>}{tab === "video" && <VideoPanel/>}{tab === "work" && <WorkPanel/>}{tab === "settings" && <SettingsPanel/>}</main><div className="bottom-safe" /></div>;
+  return <div className="app-shell"><SafeAreaTopScrim backgroundColor="var(--bg)" /><header className="utility-bar"><div><span>V / STUDIO</span><i>Private workspace</i></div><div className="provider-summary"><ProviderPill ok={Boolean(settings.data?.anthropic.configured || settings.data?.openai.configured)} label="Chat"/><ProviderPill ok={Boolean(settings.data?.openai.configured)} label="Image"/><ProviderPill ok={Boolean(settings.data?.fal.configured)} label="Video"/></div></header><TabNav active={tab} onChange={setTab}/><main>{tab === "chat" && <ChatPanel/>}{tab === "character" && <CharacterPanel/>}{tab === "protection" && <ProtectionPanel/>}{tab === "images" && <ImagesPanel/>}{tab === "video" && <VideoPanel/>}{tab === "work" && <WorkPanel/>}{tab === "settings" && <SettingsPanel/>}</main><div className="bottom-safe" /></div>;
 }
