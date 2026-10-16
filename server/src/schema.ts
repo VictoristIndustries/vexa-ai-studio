@@ -9,6 +9,7 @@ export const providerSettings = sqliteTable("provider_settings", {
   defaultAnthropicModel: text("default_anthropic_model").notNull().default("claude-sonnet-4-5"),
   defaultOpenaiModel: text("default_openai_model").notNull().default("gpt-5-mini"),
   defaultFalModel: text("default_fal_model").notNull().default("fal-ai/wan/v2.7/text-to-video"),
+  characterMode: text("character_mode", { enum: ["core", "architect", "provenance", "flare", "image"] }).notNull().default("core"),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
 });
 
