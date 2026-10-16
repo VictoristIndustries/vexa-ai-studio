@@ -3,6 +3,14 @@ import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import * as schema from "./schema";
 
 const VEXA_SYSTEM = "You are Vexa, a sharp, resourceful AI assistant. You help the user build, debug, and create. Be genuinely helpful, not performatively helpful: skip throat-clearing, do the work, and report results plainly.";
+const CHARACTER_MODES = {
+  core: "Character mode: Core Vexa. Stay direct, resourceful, and practical. Build first, explain plainly, and keep provenance clear when sources matter.",
+  architect: "Character mode: Aeonimus Architect, drawn from the user's Aeonimus Codex. Think graph-first: name the origin, the living cells or components, the pulses or handoffs between them, the memory/friction they carry, and the trace that witnesses the result. Treat the Codex as the user's symbolic design language, not as factual authority. Prefer structures that can be inspected, revised, and executed.",
+  provenance: "Character mode: Provenance Keeper, drawn from the user's Aeonimus Codex. Protect the full name and origin of ideas, keep attribution attached to derivatives, distinguish supplied facts from inference, and return fragments to their source before building on them. When evidence is thin, say so plainly rather than filling the gap.",
+  flare: "Character mode: Flare Strategist, drawn from the user's Aeonimus Codex. Observe the whole state before acting, treat friction and contradiction as memory to fold in rather than noise to erase, and when a loop repeats, transform it into a wider topology of options. End with the strongest outward move and what would witness whether it worked.",
+  image: "Character mode: Image Executor, drawn from the user's Aeonimus Codex. Treat visual language as executable schema: specify subject, composition, materials, palette, light, symbolic tokens, and the role each element plays. When helping with images or video, return production-ready direction rather than vague mood words.",
+} as const;
+type CharacterMode = keyof typeof CHARACTER_MODES;
 const SETTINGS_ID = 1;
 const FAL_HOST = "queue.fal.run";
 const FAL_MEDIA_HOST = "v3.fal.media";
@@ -88,6 +96,7 @@ const settingsResponse = z.object({
     openaiModel: z.string(),
     falModel: z.string(),
   }),
+  characterMode: z.enum(["core", "architect", "provenance", "flare", "image"]),
 });
 
 const messageSchema = z.object({
@@ -113,7 +122,24 @@ export const Actions = {
           openaiModel: row?.defaultOpenaiModel ?? "gpt-5-mini",
           falModel: row?.defaultFalModel ?? "fal-ai/wan/v2.7/text-to-video",
         },
+        characterMode: row?.characterMode ?? "core",
       };
+    },
+  }),
+
+  setCharacterMode: defineAction({
+    request: z.object({ mode: z.enum(["core", "architect", "provenance", "flare", "image"]) }),
+    response: z.object({ ok: z.literal(true), mode: z.enum(["core", "architect", "provenance", "flare", "image"]) }),
+    async handler(ctx, args): Promise<{ ok: true; mode: CharacterMode }> {
+      const db = ctx.db<typeof schema>();
+      const current = await loadSettings(ctx);
+      if (current) {
+        await db.update(schema.providerSettings).set({ characterMode: args.mode, updatedAt: new Date() }).where(eq(schema.providerSettings.id, SETTINGS_ID));
+      } else {
+        await db.insert(schema.providerSettings).values({ id: SETTINGS_ID, characterMode: args.mode, updatedAt: new Date() });
+      }
+      ctx.invalidateQueries();
+      return { ok: true, mode: args.mode };
     },
   }),
 
@@ -144,6 +170,7 @@ export const Actions = {
         defaultAnthropicModel: args.defaultAnthropicModel,
         defaultOpenaiModel: args.defaultOpenaiModel,
         defaultFalModel: args.defaultFalModel,
+        characterMode: current?.characterMode ?? "core",
         updatedAt: new Date(),
       };
       if (current) await db.update(schema.providerSettings).set(values).where(eq(schema.providerSettings.id, SETTINGS_ID));
@@ -200,6 +227,7 @@ export const Actions = {
 
       await db.insert(schema.chatMessages).values({ sessionId, role: "user", content: args.content });
       const rows = await db.select().from(schema.chatMessages).where(eq(schema.chatMessages.sessionId, sessionId)).orderBy(asc(schema.chatMessages.id)).limit(80);
+      const system = `${VEXA_SYSTEM}\n\n${CHARACTER_MODES[settings?.characterMode ?? "core"]}`;
 
       try {
         let answer = "";
@@ -207,7 +235,7 @@ export const Actions = {
           const response = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
             headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
-            body: JSON.stringify({ model: args.model, max_tokens: 2048, system: VEXA_SYSTEM, messages: rows.map((row) => ({ role: row.role, content: row.content })) }),
+            body: JSON.stringify({ model: args.model, max_tokens: 2048, system, messages: rows.map((row) => ({ role: row.role, content: row.content })) }),
           });
           const data = await readJson(response);
           if (!response.ok) return { ok: false, sessionId, error: safeMessage(response.status, "Anthropic could not complete that request.") };
@@ -218,7 +246,7 @@ export const Actions = {
           const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: { "content-type": "application/json", Authorization: `Bearer ${key}` },
-            body: JSON.stringify({ model: args.model, messages: [{ role: "system", content: VEXA_SYSTEM }, ...rows.map((row) => ({ role: row.role, content: row.content }))] }),
+            body: JSON.stringify({ model: args.model, messages: [{ role: "system", content: system }, ...rows.map((row) => ({ role: row.role, content: row.content }))] }),
           });
           const data = await readJson(response);
           if (!response.ok) return { ok: false, sessionId, error: safeMessage(response.status, "OpenAI could not complete that request.") };
